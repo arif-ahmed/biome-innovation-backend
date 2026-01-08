@@ -12,7 +12,7 @@ public class EmailService : IEmailService
         _logger = logger;
     }
 
-    public Task SendEmailAsync(string to, string subject, string body)
+    public Task SendEmailAsync(string to, string subject, string body, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Sending email to {To} with subject {Subject}: {Body}", to, subject, body);
         return Task.CompletedTask;

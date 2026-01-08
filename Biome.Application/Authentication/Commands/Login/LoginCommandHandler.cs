@@ -77,6 +77,12 @@ internal sealed class LoginCommandHandler : IRequestHandler<LoginCommand, Result
             roleName,
             permissions);
 
-        return new AuthenticationResult(user, token);
+        string refreshTokenValue = _jwtTokenGenerator.GenerateRefreshToken();
+        var refreshToken = Biome.Domain.Users.ValueObjects.RefreshToken.Create(refreshTokenValue, DateTime.UtcNow.AddDays(7));
+        user.SetRefreshToken(refreshToken);
+
+        await _userRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
+
+        return new AuthenticationResult(user, token, refreshTokenValue);
     }
 }

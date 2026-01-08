@@ -4,4 +4,5 @@ using Biome.Domain.Users;
 
 public sealed record AuthenticationResult(
     User User,
-    string Token);
+    string Token,
+    string RefreshToken);

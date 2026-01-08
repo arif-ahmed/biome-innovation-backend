@@ -30,6 +30,12 @@ public class InMemoryUserRepository : IUserRepository, IUnitOfWork
         return Task.FromResult(user);
     }
 
+    public Task<User?> GetByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
+    {
+        var user = _users.FirstOrDefault(u => u.RefreshToken?.Token == refreshToken);
+        return Task.FromResult(user);
+    }
+
     public void Add(User user)
     {
         _users.Add(user);

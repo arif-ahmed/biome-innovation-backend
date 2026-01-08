@@ -96,4 +96,42 @@ public sealed class User : AggregateRoot
 
         return Result.Success();
     }
+
+    public RefreshToken? RefreshToken { get; private set; }
+    public string? PasswordResetToken { get; private set; }
+    public DateTime? PasswordResetTokenExpiry { get; private set; }
+
+    public void SetRefreshToken(RefreshToken refreshToken)
+    {
+        RefreshToken = refreshToken;
+    }
+
+    public void RevokeRefreshToken()
+    {
+        RefreshToken = null;
+    }
+
+    public void RequestPasswordReset(string token, DateTime expiry)
+    {
+        PasswordResetToken = token;
+        PasswordResetTokenExpiry = expiry;
+
+        RaiseDomainEvent(new UserPasswordResetRequestedDomainEvent(Id, token));
+    }
+
+    public Result ResetPassword(string token, string newPasswordHash)
+    {
+        if (PasswordResetToken != token || PasswordResetTokenExpiry < DateTime.UtcNow)
+        {
+            return Result.Failure(new Error("User.InvalidResetToken", "Invalid or expired password reset token."));
+        }
+
+        PasswordHash = newPasswordHash;
+        PasswordResetToken = null;
+        PasswordResetTokenExpiry = null;
+
+        RaiseDomainEvent(new UserPasswordChangedDomainEvent(Id));
+
+        return Result.Success();
+    }
 }

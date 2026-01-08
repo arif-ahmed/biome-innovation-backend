@@ -34,6 +34,19 @@ public class Result
 
     public static Result<TValue> Create<TValue>(TValue? value) =>
         value is not null ? Success(value) : Failure<TValue>(Error.NullValue);
+
+    public static Result Combine(params Result[] results)
+    {
+        foreach (var result in results)
+        {
+            if (result.IsFailure)
+            {
+                return result;
+            }
+        }
+
+        return Success();
+    }
 }
 
 public class Result<TValue> : Result
