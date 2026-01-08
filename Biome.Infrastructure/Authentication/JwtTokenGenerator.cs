@@ -16,9 +16,9 @@ public sealed class JwtTokenGenerator : IJwtTokenGenerator
         _jwtSettings = jwtOptions.Value;
     }
 
-    public string GenerateToken(Guid userId, string firstName, string lastName, string email, string role)
+    public string GenerateToken(Guid userId, string firstName, string lastName, string email, string role, IEnumerable<string> permissions)
     {
-        var claims = new[]
+        var claims = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
             new Claim(JwtRegisteredClaimNames.GivenName, firstName),
@@ -27,6 +27,11 @@ public sealed class JwtTokenGenerator : IJwtTokenGenerator
             new Claim("role", role),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
+
+        foreach (var permission in permissions)
+        {
+            claims.Add(new Claim("permission", permission));
+        }
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

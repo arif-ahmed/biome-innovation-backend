@@ -8,36 +8,36 @@ using Biome.SharedKernel.ValueObjects;
 
 public sealed class User : AggregateRoot
 {
-    private User(Guid id, FirstName firstName, LastName lastName, Email email, string passwordHash, UserRole role)
+    private User(Guid id, FirstName firstName, LastName lastName, Email email, string passwordHash, Guid roleId)
         : base(id)
     {
         FirstName = firstName;
         LastName = lastName;
         Email = email;
         PasswordHash = passwordHash;
-        Role = role;
+        RoleId = roleId;
     }
 
     public FirstName FirstName { get; private set; }
     public LastName LastName { get; private set; }
     public Email Email { get; private set; }
     public string PasswordHash { get; private set; }
-    public UserRole Role { get; private set; }
+    public Guid RoleId { get; private set; }
     public bool IsEmailVerified { get; private set; }
     public bool IsBanned { get; private set; }
 
-    public static User Register(FirstName firstName, LastName lastName, Email email, string passwordHash, UserRole role)
+    public static User Register(FirstName firstName, LastName lastName, Email email, string passwordHash, Guid roleId)
     {
-        var user = new User(Guid.NewGuid(), firstName, lastName, email, passwordHash, role);
+        var user = new User(Guid.NewGuid(), firstName, lastName, email, passwordHash, roleId);
 
         user.RaiseDomainEvent(new UserRegisteredDomainEvent(user.Id));
 
         return user;
     }
 
-    public static User Create(FirstName firstName, LastName lastName, Email email, string passwordHash, UserRole role, string temporaryPassword)
+    public static User Create(FirstName firstName, LastName lastName, Email email, string passwordHash, Guid roleId, string temporaryPassword)
     {
-        var user = new User(Guid.NewGuid(), firstName, lastName, email, passwordHash, role);
+        var user = new User(Guid.NewGuid(), firstName, lastName, email, passwordHash, roleId);
 
         user.RaiseDomainEvent(new UserCreatedDomainEvent(user.Id, temporaryPassword));
 
@@ -82,15 +82,17 @@ public sealed class User : AggregateRoot
         LastName = lastName;
     }
 
+    public void AssignRole(Guid roleId)
+    {
+        RoleId = roleId;
+    }
+
     public Result EnsureLoginEligibility()
     {
         if (IsBanned)
         {
             return Result.Failure(new Error("User.Banned", "The user account is banned."));
         }
-
-        // We can add email verification check here later if strict policy is needed.
-        // if (!IsEmailVerified) { ... }
 
         return Result.Success();
     }

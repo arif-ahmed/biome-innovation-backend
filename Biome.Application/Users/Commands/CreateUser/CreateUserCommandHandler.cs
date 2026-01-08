@@ -1,6 +1,7 @@
 namespace Biome.Application.Users.Commands.CreateUser;
 
 using Biome.SharedKernel.Abstractions;
+using Biome.Domain.Roles;
 using Biome.Domain.Users;
 using Biome.Domain.Users.ValueObjects;
 using Biome.SharedKernel.Primitives;
@@ -12,11 +13,16 @@ using System.Threading.Tasks;
 internal sealed class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Result<Guid>>
 {
     private readonly IUserRepository _userRepository;
+    private readonly IRoleRepository _roleRepository;
     private readonly IPasswordHasher _passwordHasher;
 
-    public CreateUserCommandHandler(IUserRepository userRepository, IPasswordHasher passwordHasher)
+    public CreateUserCommandHandler(
+        IUserRepository userRepository,
+        IRoleRepository roleRepository,
+        IPasswordHasher passwordHasher)
     {
         _userRepository = userRepository;
+        _roleRepository = roleRepository;
         _passwordHasher = passwordHasher;
     }
 
@@ -37,10 +43,11 @@ internal sealed class CreateUserCommandHandler : IRequestHandler<CreateUserComma
             return Result.Failure<Guid>(new Error("User.EmailAlreadyExists", "The email is already in use."));
         }
 
-        // Parse Role (Validator ensures it's valid)
-        if (!UserRole.TryFromName(request.Role, true, out var role) || role is null)
+        // Parse Role: Now we must look it up in the Repository
+        var role = await _roleRepository.GetByNameAsync(request.Role, cancellationToken);
+        if (role is null)
         {
-             return Result.Failure<Guid>(new Error("User.InvalidRole", "Invalid role specified."));
+             return Result.Failure<Guid>(new Error("User.InvalidRole", $"Role '{request.Role}' not found."));
         }
 
         string passwordHash = _passwordHasher.Hash(request.Password);
@@ -53,7 +60,7 @@ internal sealed class CreateUserCommandHandler : IRequestHandler<CreateUserComma
             lastNameResult.Value,
             emailResult.Value,
             passwordHash,
-            role!,
+            role.Id,
             request.Password); 
 
         _userRepository.Add(user);

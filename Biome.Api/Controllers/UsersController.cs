@@ -31,6 +31,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
+    [Microsoft.AspNetCore.Authorization.Authorize(Policy = "Users:Create")]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserCommand command)
     {
         Result<Guid> result = await _sender.Send(command);

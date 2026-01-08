@@ -18,6 +18,7 @@ public static class DependencyInjection
 
         services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
         services.AddSingleton<IUserRepository, InMemoryUserRepository>();
+        services.AddSingleton<Biome.Domain.Roles.IRoleRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryRoleRepository>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<IEmailService, EmailService>();
 
@@ -37,6 +38,14 @@ public static class DependencyInjection
                         System.Text.Encoding.UTF8.GetBytes(jwtSettings.Secret))
                 };
             });
+
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("Users:Read", policy => policy.RequireClaim("permission", "Users:Read"));
+            options.AddPolicy("Users:Create", policy => policy.RequireClaim("permission", "Users:Create"));
+            options.AddPolicy("Users:ReadSelf", policy => policy.RequireClaim("permission", "Users:ReadSelf"));
+            options.AddPolicy("Roles:Create", policy => policy.RequireClaim("permission", "Roles:Create"));
+        });
 
         return services;
     }
