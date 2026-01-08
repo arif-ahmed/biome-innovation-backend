@@ -90,27 +90,6 @@ public class UsersController : ControllerBase
     }
 
 
-    [HttpPost("me/pets")]
-    [Microsoft.AspNetCore.Authorization.Authorize]
-    public async Task<IActionResult> AddPet([FromBody] AddPetRequest request)
-    {
-        var userId = GetUserId();
-        if (userId == Guid.Empty) return Unauthorized();
-
-        var command = new Biome.Application.Users.Commands.AddPet.AddPetCommand(
-            userId, 
-            request.Name, 
-            request.Type, 
-            request.Breed, 
-            request.DateOfBirth);
-
-        var result = await _sender.Send(command);
-
-        if (result.IsFailure) return BadRequest(result.Error);
-
-        return Ok();
-    }
-
     private Guid GetUserId()
     {
         var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value;
@@ -120,4 +99,3 @@ public class UsersController : ControllerBase
 
 public record UpdateUserProfileRequest(string FirstName, string LastName);
 public record ChangePasswordRequest(string CurrentPassword, string NewPassword);
-public record AddPetRequest(string Name, Biome.Domain.Users.Enums.PetType Type, string? Breed, DateTime? DateOfBirth);
