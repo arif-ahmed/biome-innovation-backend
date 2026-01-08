@@ -46,7 +46,7 @@ internal sealed class RegisterUserCommandHandler : IRequestHandler<RegisterUserC
 
         string passwordHash = _passwordHasher.Hash(request.Password);
 
-        var user = User.Create(
+        var user = User.Register(
             firstNameResult.Value,
             lastNameResult.Value,
             emailResult.Value,

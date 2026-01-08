@@ -28,6 +28,20 @@ public sealed class UserRole : ValueObject
         };
     }
 
+    public static IEnumerable<UserRole> GetAll()
+    {
+        yield return Customer;
+        yield return LabAssistant;
+        yield return Admin;
+    }
+
+    public static bool TryFromName(string name, bool ignoreCase, out UserRole? role)
+    {
+        var comparison = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+        role = GetAll().FirstOrDefault(r => string.Equals(r.Name, name, comparison));
+        return role != null;
+    }
+
     protected override IEnumerable<object> GetAtomicValues()
     {
         yield return Code;

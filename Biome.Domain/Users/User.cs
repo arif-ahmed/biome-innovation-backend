@@ -25,11 +25,20 @@ public sealed class User : AggregateRoot
     public bool IsEmailVerified { get; private set; }
     public bool IsBanned { get; private set; }
 
-    public static User Create(FirstName firstName, LastName lastName, Email email, string passwordHash, UserRole role)
+    public static User Register(FirstName firstName, LastName lastName, Email email, string passwordHash, UserRole role)
     {
         var user = new User(Guid.NewGuid(), firstName, lastName, email, passwordHash, role);
 
         user.RaiseDomainEvent(new UserRegisteredDomainEvent(user.Id));
+
+        return user;
+    }
+
+    public static User Create(FirstName firstName, LastName lastName, Email email, string passwordHash, UserRole role, string temporaryPassword)
+    {
+        var user = new User(Guid.NewGuid(), firstName, lastName, email, passwordHash, role);
+
+        user.RaiseDomainEvent(new UserCreatedDomainEvent(user.Id, temporaryPassword));
 
         return user;
     }
