@@ -8,6 +8,7 @@ using Biome.SharedKernel.ValueObjects;
 
 public sealed class User : AggregateRoot
 {
+    private readonly List<Entities.Pet> _pets = new();
     private User(Guid id, FirstName firstName, LastName lastName, Email email, string passwordHash, Guid roleId)
         : base(id)
     {
@@ -132,6 +133,32 @@ public sealed class User : AggregateRoot
 
         RaiseDomainEvent(new UserPasswordChangedDomainEvent(Id));
 
+        return Result.Success();
+    }
+
+    public IReadOnlyCollection<Entities.Pet> Pets => _pets.AsReadOnly();
+
+    public Result AddPet(string name, Enums.PetType type, string? breed, DateTime? dateOfBirth)
+    {
+        Result<Entities.Pet> petResult = Entities.Pet.Create(name, type, breed, dateOfBirth);
+        if (petResult.IsFailure)
+        {
+            return Result.Failure(petResult.Error);
+        }
+
+        _pets.Add(petResult.Value);
+        return Result.Success();
+    }
+
+    public Result RemovePet(Guid petId)
+    {
+        var pet = _pets.FirstOrDefault(p => p.Id == petId);
+        if (pet is null)
+        {
+            return Result.Failure(new Error("User.PetNotFound", "Pet not found."));
+        }
+
+        _pets.Remove(pet);
         return Result.Success();
     }
 }

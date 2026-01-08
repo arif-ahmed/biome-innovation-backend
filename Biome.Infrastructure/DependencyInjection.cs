@@ -21,6 +21,7 @@ public static class DependencyInjection
         services.AddSingleton<Biome.Domain.Roles.IRoleRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryRoleRepository>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<IEmailService, Biome.Infrastructure.Services.Email.MockEmailService>();
+        services.AddSingleton<Biome.Domain.Orders.IOrderRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryOrderRepository>();
 
         services.AddAuthentication(defaultScheme: "Bearer")
             .AddJwtBearer(options =>
