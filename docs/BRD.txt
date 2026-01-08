@@ -1,0 +1,60 @@
+Business Requirements Document (BRD) Project Name BiomeInnovation Digital Transformation Platform Version 1.0 Date October 26, 2023 Prepared By Software Architect
+1. Executive Summary
+BiomeInnovation aims to digitalize its pet health operations to enhance efficiency, security, and customer experience. The current manual processes for order management, lab data entry, and report generation are resource-intensive. This project proposes a Serverless Web Application to automate the entire workflow—from customer kit orders to automated health report generation—while reducing infrastructure costs and ensuring PCI/DSS compliance.
+2. Business Problem & Background
+Currently, BiomeInnovation faces the following challenges:
+● Manual Inefficiency: Heavy reliance on manual processes for order tracking and report generation leads to slower turnaround times for customers.
+● Infrastructure Costs: Maintaining legacy hosting (EC2) requires constant maintenance and lacks the scalability needed for growth.
+● Security Risks: Handling sensitive health and payment data requires strict adherence to security standards (PCI/DSS), which current manual processes may not fully guarantee.
+● Customer Experience: Lack of a self-service portal forces customers to rely on support staff to check order status or view reports.
+3. Project Objectives
+The primary goals of this project are:
+1. Automation: Automate the report generation process based on sample data inputs to reduce human error and processing time.
+2. Cost Reduction: Move to a Serverless architecture (Pay-as-you-go) to reduce IT infrastructure and maintenance costs.
+3. Security & Compliance: Ensure all customer data and payments are encrypted and compliant with PCI/DSS.
+4. Self-Service Enablement: Provide customers with a web portal to order kits, track samples, and download reports instantly.
+5. Scalability: Build a system that can grow automatically with the business without manual server upgrades.
+4. Key Stakeholders Stakeholder Role Interest Customers Pet Owners Easy ordering, fast results, secure access to pet health data. Lab Staff Lab Assistants Efficient tools to input data and manage samples. Management BiomeInnovation Admins Oversight of orders, revenue, and user management. IT Team Developers/Ops Maintainable code, automated deployment (CI/CD), and security.
+5. Project Scope
+5.1 In-Scope
+● Design and development of a Customer Web Portal (Frontend).
+● Development of a Lab Assistant Portal for data entry.
+● Development of an Admin Dashboard for business management.
+● Implementation of Serverless Backend APIs (Authentication, Orders, Data).
+● Microservice for automated health report generation (PDF).
+● Integration with Payment Gateways (Stripe, etc.) and Shipping APIs.
+● CI/CD Pipeline setup for automated deployment.
+● Migration of DNS and hosting to AWS Serverless architecture.
+5.2 Out-of-Scope
+● Hardware integration with lab testing machines (Data entered manually or via CSV).
+● Physical logistics (external delivery services; only software integration is in scope).
+● Native Mobile Application (only responsive Web App for initial scope).
+6. Business Process Model
+6.1 Current State (As-Is)
+1. Customer places order via manual means or basic site.
+2. Admin manually tracks payment and order.
+3. Lab receives sample and performs test.
+4. Lab manually calculates results or inputs data into a disconnected system.
+5. Report is manually generated and emailed to the customer.
+6.2 Future State (To-Be)
+1. Order: Customer logs into the portal, selects a kit, and pays via integrated Payment Gateway.
+2. Processing: System triggers shipping notification. Lab receives sample.
+3. Data Entry: Lab Assistant logs into the portal, searches Order ID, and inputs sample data.
+4. Automation: System automatically triggers the "Report Microservice."
+5. Delivery: Report is generated, saved to cloud, and the customer receives an instant email notification to view/download it from the portal.
+7. Detailed Business Requirements ID Category Requirement Description BR-001 User Management The system must allow users to register and verify their email address. BR-002 User Management The system must secure user accounts with Two-Factor Authentication (2FA). BR-003 User Management The system must restrict access based on roles (RBAC). BR-004 E-Commerce Customers must be able to purchase "Microbiome Test Kits" using credit/debit cards.
+BR-005 E-Commerce The system must store customer shipping addresses and map them for shipping labels. BR-006 E-Commerce The system must send order confirmation emails via MS365 upon successful purchase. BR-007 Lab Ops Lab Assistants require an interface to input sample data linked to a specific Order ID. BR-008 Lab Ops Upon data entry, the system must automatically generate a health suggestion report. BR-009 Lab Ops The report must be available as a downloadable PDF for the customer. BR-010 Notifications The system must automatically notify customers via Email/SMS when their report is ready. BR-011 Notifications Customers must be able to submit support requests through a portal ticketing system. BR-012 Infrastructure The system must be hosted on AWS Serverless components to minimize overhead. BR-013 Performance The system must support
+at least 1,000 concurrent users without degradation.
+8. Constraints & Assumptions
+● Compliance: Solution must adhere to Australian Privacy Principles and PCI/DSS for payments.
+● Technology: Cloud provider must be AWS (as per current infrastructure strategy).
+● Data: Historical data from the legacy system needs to be migrated.
+9. Expected Benefits (ROI)
+● Operational Efficiency: Reduction in report generation time by ~90% through automation.
+● Cost Savings: Estimated 30-40% reduction in infrastructure costs by moving from EC2 to Serverless (Lambda/S3).
+● Customer Satisfaction: 24/7 access to reports and order tracking improves trust and transparency.
+● Security: Reduced risk of data breaches through encrypted cloud storage and automated compliance.
+Approval
+Client Name: BiomeInnovation
+Project Sponsor / Manager: __________________________
+Date: __________________________
