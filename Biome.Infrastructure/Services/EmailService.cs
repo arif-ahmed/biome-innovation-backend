@@ -1,6 +1,6 @@
 namespace Biome.Infrastructure.Services;
 
-using Biome.Application.Common.Interfaces;
+using Biome.SharedKernel.Abstractions;
 using Microsoft.Extensions.Logging;
 
 public class EmailService : IEmailService

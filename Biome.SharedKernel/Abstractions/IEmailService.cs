@@ -1,4 +1,4 @@
-namespace Biome.Application.Common.Interfaces;
+namespace Biome.SharedKernel.Abstractions;
 
 public interface IEmailService
 {

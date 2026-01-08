@@ -1,6 +1,6 @@
 namespace Biome.Application.Users.Events;
 
-using Biome.Application.Common.Interfaces;
+using Biome.SharedKernel.Abstractions;
 using Biome.Domain.Users;
 using Biome.Domain.Users.Events;
 using MediatR;

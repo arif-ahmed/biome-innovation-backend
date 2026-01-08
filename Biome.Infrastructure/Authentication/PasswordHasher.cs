@@ -1,6 +1,6 @@
 namespace Biome.Infrastructure.Authentication;
 
-using Biome.Application.Common.Interfaces.Authentication;
+using Biome.SharedKernel.Abstractions;
 using System.Security.Cryptography;
 using System.Text;
 

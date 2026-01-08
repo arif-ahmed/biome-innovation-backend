@@ -1,6 +1,6 @@
 namespace Biome.Application.Users.Commands.RegisterUser;
 
-using Biome.Application.Common.Interfaces.Authentication;
+using Biome.SharedKernel.Abstractions;
 using Biome.Domain.Users;
 using Biome.Domain.Users.ValueObjects;
 using Biome.SharedKernel.Primitives;

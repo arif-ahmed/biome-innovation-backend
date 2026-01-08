@@ -1,4 +1,4 @@
-namespace Biome.Application.Common.Interfaces.Authentication;
+namespace Biome.SharedKernel.Abstractions;
 
 public interface IPasswordHasher
 {

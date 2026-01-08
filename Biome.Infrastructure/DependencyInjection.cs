@@ -1,7 +1,6 @@
 namespace Biome.Infrastructure;
 
-using Biome.Application.Common.Interfaces;
-using Biome.Application.Common.Interfaces.Authentication;
+using Biome.SharedKernel.Abstractions;
 using Biome.Domain.Users;
 using Biome.Infrastructure.Authentication;
 using Biome.Infrastructure.Persistence.Repositories;
