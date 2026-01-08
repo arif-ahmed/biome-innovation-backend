@@ -3,6 +3,7 @@ namespace Biome.Domain.Users;
 using Biome.Domain.Users.Events;
 using Biome.Domain.Users.ValueObjects;
 using Biome.SharedKernel.Core;
+using Biome.SharedKernel.Primitives;
 using Biome.SharedKernel.ValueObjects;
 
 public sealed class User : AggregateRoot
@@ -79,5 +80,18 @@ public sealed class User : AggregateRoot
     {
         FirstName = firstName;
         LastName = lastName;
+    }
+
+    public Result EnsureLoginEligibility()
+    {
+        if (IsBanned)
+        {
+            return Result.Failure(new Error("User.Banned", "The user account is banned."));
+        }
+
+        // We can add email verification check here later if strict policy is needed.
+        // if (!IsEmailVerified) { ... }
+
+        return Result.Success();
     }
 }
