@@ -22,15 +22,15 @@ internal sealed class GetMyOrdersQueryHandler : IRequestHandler<GetMyOrdersQuery
             o.Id,
             o.OrderDate,
             o.Status,
-            o.TotalAmount,
+            o.TotalAmount.Amount,
             o.OrderItems.Select(i => new OrderItemResponse(
                 i.ProductId,
                 i.ProductName,
-                i.UnitPrice,
+                i.UnitPrice.Amount,
                 i.Quantity,
                 i.KitType,
                 i.PetId,
-                i.TotalAmount)).ToList()
+                i.TotalAmount.Amount)).ToList()
         )).ToList();
 
         return response;

@@ -21,7 +21,8 @@ internal sealed class CreateOrderCommandHandler : IRequestHandler<CreateOrderCom
         // 2. Add Items
         foreach (var item in request.Items)
         {
-            order.AddItem(item.ProductId, item.ProductName, item.UnitPrice, item.Quantity, item.KitType, item.PetId);
+            var unitPrice = Biome.SharedKernel.ValueObjects.Money.From(item.UnitPrice, "USD");
+            order.AddItem(item.ProductId, item.ProductName, unitPrice, item.Quantity, item.KitType, item.PetId);
         }
 
         // 3. Finalize Creation (Invariant Check: Must have items)

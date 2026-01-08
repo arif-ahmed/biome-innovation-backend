@@ -53,21 +53,6 @@ public class OrdersController : ControllerBase
         return Ok(result.Value);
     }
     
-    [HttpPost("{id}/pay")]
-    [Authorize]
-    public async Task<IActionResult> PayOrder(Guid id)
-    {
-        var command = new Biome.Application.Orders.Commands.PayOrder.PayOrderCommand(id);
-        Result result = await _sender.Send(command);
-
-        if (result.IsFailure)
-        {
-            return BadRequest(result.Error);
-        }
-
-        return Ok();
-    }
-    
     private Guid GetUserId()
     {
         var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value;

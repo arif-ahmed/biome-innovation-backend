@@ -22,6 +22,8 @@ public static class DependencyInjection
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<IEmailService, Biome.Infrastructure.Services.Email.MockEmailService>();
         services.AddSingleton<Biome.Domain.Orders.IOrderRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryOrderRepository>();
+        services.AddSingleton<Biome.Domain.Payments.IPaymentRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryPaymentRepository>();
+        services.AddSingleton<Biome.Application.Common.Interfaces.IPaymentGateway, Biome.Infrastructure.Services.Payments.MockPaymentGateway>();
 
         services.AddAuthentication(defaultScheme: "Bearer")
             .AddJwtBearer(options =>

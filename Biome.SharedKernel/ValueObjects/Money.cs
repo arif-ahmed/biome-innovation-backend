@@ -1,13 +1,15 @@
-namespace Biome.SharedKernel.ValueObjects;
-
+using System;
+using System.Collections.Generic;
 using Biome.SharedKernel.Core;
+using Biome.SharedKernel.Primitives;
+
+namespace Biome.SharedKernel.ValueObjects;
 
 public sealed class Money : ValueObject
 {
     public static readonly Money Zero = new(0, "USD");
-    public static readonly Money ZeroEur = new(0, "EUR");
 
-    public Money(decimal amount, string currency)
+    private Money(decimal amount, string currency)
     {
         Amount = amount;
         Currency = currency;
@@ -16,11 +18,16 @@ public sealed class Money : ValueObject
     public decimal Amount { get; }
     public string Currency { get; }
 
+    public static Money From(decimal amount, string currency)
+    {
+        return new Money(amount, currency);
+    }
+
     public static Money operator +(Money first, Money second)
     {
         if (first.Currency != second.Currency)
         {
-            throw new InvalidOperationException("Currencies have to match");
+            throw new InvalidOperationException("Currencies must match for addition");
         }
 
         return new Money(first.Amount + second.Amount, first.Currency);
@@ -30,37 +37,26 @@ public sealed class Money : ValueObject
     {
         if (first.Currency != second.Currency)
         {
-            throw new InvalidOperationException("Currencies have to match");
+            throw new InvalidOperationException("Currencies must match for subtraction");
         }
 
         return new Money(first.Amount - second.Amount, first.Currency);
     }
 
-    public static bool operator >(Money first, Money second) => first.Amount > second.Amount;
-
-    public static bool operator <(Money first, Money second) => first.Amount < second.Amount;
-
-    public static bool operator >=(Money first, Money second) => first.Amount >= second.Amount;
-
-    public static bool operator <=(Money first, Money second) => first.Amount <= second.Amount;
-
-
-    public static bool operator ==(Money first, Money second)
+    public static Money operator *(Money first, int multiplier)
     {
-        if (first is null && second is null)
-        {
-            return true;
-        }
-
-        if (first is null || second is null)
-        {
-            return false;
-        }
-
-        return first.Equals(second);
+        return new Money(first.Amount * multiplier, first.Currency);
     }
 
-    public static bool operator !=(Money first, Money second) => !(first == second);
+    public static bool operator ==(Money? left, Money? right)
+    {
+        return Equals(left, right);
+    }
+
+    public static bool operator !=(Money? left, Money? right)
+    {
+        return !Equals(left, right);
+    }
 
     public override bool Equals(object? obj)
     {

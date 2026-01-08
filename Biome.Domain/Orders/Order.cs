@@ -3,6 +3,7 @@ using Biome.Domain.Orders.Enums;
 using Biome.Domain.Orders.Events;
 using Biome.SharedKernel.Core;
 using Biome.SharedKernel.Primitives;
+using Biome.SharedKernel.ValueObjects;
 
 namespace Biome.Domain.Orders;
 
@@ -23,7 +24,25 @@ public sealed class Order : AggregateRoot
     public OrderStatus Status { get; private set; }
     public IReadOnlyCollection<OrderItem> OrderItems => _orderItems.AsReadOnly();
 
-    public decimal TotalAmount => _orderItems.Sum(item => item.TotalAmount);
+    public Money TotalAmount
+    {
+        get
+        {
+            if (_orderItems.Count == 0)
+            {
+                return Money.Zero;
+            }
+
+            var total = _orderItems[0].TotalAmount;
+
+            for (int i = 1; i < _orderItems.Count; i++)
+            {
+                total += _orderItems[i].TotalAmount;
+            }
+
+            return total;
+        }
+    }
 
     public static Order Create(Guid customerId)
     {
@@ -38,7 +57,7 @@ public sealed class Order : AggregateRoot
         return order;
     }
 
-    public void AddItem(Guid productId, string productName, decimal unitPrice, int quantity, KitType kitType, Guid? petId)
+    public void AddItem(Guid productId, string productName, Money unitPrice, int quantity, KitType kitType, Guid? petId)
     {
         if (quantity <= 0)
         {
