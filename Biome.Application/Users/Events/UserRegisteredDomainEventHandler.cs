@@ -1,23 +1,36 @@
 namespace Biome.Application.Users.Events;
 
+using Biome.Application.Common.Interfaces;
+using Biome.Domain.Users;
 using Biome.Domain.Users.Events;
 using MediatR;
-using Microsoft.Extensions.Logging;
+using System.Threading;
+using System.Threading.Tasks;
 
 public sealed class UserRegisteredDomainEventHandler : INotificationHandler<UserRegisteredDomainEvent>
 {
-    private readonly ILogger<UserRegisteredDomainEventHandler> _logger;
+    private readonly IUserRepository _userRepository;
+    private readonly IEmailService _emailService;
 
-    public UserRegisteredDomainEventHandler(ILogger<UserRegisteredDomainEventHandler> logger)
+    public UserRegisteredDomainEventHandler(
+        IUserRepository userRepository,
+        IEmailService emailService)
     {
-        _logger = logger;
+        _userRepository = userRepository;
+        _emailService = emailService;
     }
 
-    public Task Handle(UserRegisteredDomainEvent notification, CancellationToken cancellationToken)
+    public async Task Handle(UserRegisteredDomainEvent notification, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Domain Event: Sending activation email to User {UserId}", notification.UserId);
-        
-        // Simulation of sending email
-        return Task.CompletedTask;
+        var user = await _userRepository.GetByIdAsync(notification.UserId, cancellationToken);
+        if (user is null)
+        {
+            return;
+        }
+
+        await _emailService.SendEmailAsync(
+            user.Email.Value,
+            "Welcome to Biome Innovation!",
+            $"Hi {user.FirstName.Value}, welcome to our platform! Please verify your email.");
     }
 }
