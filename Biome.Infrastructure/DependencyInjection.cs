@@ -25,6 +25,9 @@ public static class DependencyInjection
         services.AddSingleton<Biome.Domain.Payments.IPaymentRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryPaymentRepository>();
         services.AddSingleton<Biome.Domain.Pets.IPetRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryPetRepository>();
         services.AddSingleton<Biome.Application.Common.Interfaces.IPaymentGateway, Biome.Infrastructure.Services.Payments.MockPaymentGateway>();
+        services.AddSingleton<Biome.Domain.Lab.ILabTestRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryLabTestRepository>();
+        services.AddSingleton<Biome.Domain.Reports.IHealthReportRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryHealthReportRepository>();
+        services.AddSingleton<Biome.Domain.Notifications.INotificationRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryNotificationRepository>();
 
         services.AddAuthentication(defaultScheme: "Bearer")
             .AddJwtBearer(options =>
