@@ -21,6 +21,9 @@ public static class DependencyInjection
         services.AddSingleton<Biome.Domain.Roles.IRoleRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryRoleRepository>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<IEmailService, Biome.Infrastructure.Services.Email.MockEmailService>();
+        services.AddSingleton<ITwoFactorService, Biome.Infrastructure.Services.Authentication.MockTwoFactorService>();
+        services.AddSingleton<IShippingService, Biome.Infrastructure.Services.Shipping.MockShippingService>();
+        services.AddSingleton<Biome.Domain.Shipping.IShipmentRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryShipmentRepository>();
         services.AddSingleton<Biome.Domain.Orders.IOrderRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryOrderRepository>();
         services.AddSingleton<Biome.Domain.Payments.IPaymentRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryPaymentRepository>();
         services.AddSingleton<Biome.Domain.Pets.IPetRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryPetRepository>();
@@ -28,6 +31,7 @@ public static class DependencyInjection
         services.AddSingleton<Biome.Domain.Lab.ILabTestRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryLabTestRepository>();
         services.AddSingleton<Biome.Domain.Reports.IHealthReportRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryHealthReportRepository>();
         services.AddSingleton<Biome.Domain.Notifications.INotificationRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryNotificationRepository>();
+        services.AddSingleton<Biome.Domain.Support.ITicketRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryTicketRepository>();
 
         services.AddAuthentication(defaultScheme: "Bearer")
             .AddJwtBearer(options =>

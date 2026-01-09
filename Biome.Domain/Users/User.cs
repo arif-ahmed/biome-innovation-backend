@@ -6,6 +6,7 @@ using Biome.Domain.Users.ValueObjects;
 using Biome.SharedKernel.Core;
 using Biome.SharedKernel.Primitives;
 using Biome.SharedKernel.ValueObjects;
+using Biome.SharedKernel.Abstractions;
 
 public sealed class User : AggregateRoot
 {
@@ -129,6 +130,42 @@ public sealed class User : AggregateRoot
         PasswordReset = null;
 
         RaiseDomainEvent(new UserPasswordChangedDomainEvent(Id));
+
+        return Result.Success();
+    }
+
+    public bool TwoFactorEnabled { get; private set; }
+    public string? TwoFactorSecret { get; private set; }
+
+    public Result EnableTwoFactor(string secret, string code, ITwoFactorService twoFactorService)
+    {
+        if (TwoFactorEnabled)
+        {
+            return Result.Failure(new Error("User.TwoFactorAlreadyEnabled", "2FA is already enabled."));
+        }
+
+        if (!twoFactorService.ValidateCode(secret, code))
+        {
+             return Result.Failure(new Error("User.InvalidTwoFactorCode", "Invalid 2FA code."));
+        }
+
+        TwoFactorEnabled = true;
+        TwoFactorSecret = secret;
+        
+        return Result.Success();
+    }
+
+    public Result VerifyTwoFactorLogin(string code, ITwoFactorService twoFactorService)
+    {
+        if (!TwoFactorEnabled || string.IsNullOrEmpty(TwoFactorSecret))
+        {
+             return Result.Failure(new Error("User.TwoFactorNotEnabled", "2FA is not enabled."));
+        }
+
+        if (!twoFactorService.ValidateCode(TwoFactorSecret, code))
+        {
+             return Result.Failure(new Error("User.InvalidTwoFactorCode", "Invalid 2FA code."));
+        }
 
         return Result.Success();
     }

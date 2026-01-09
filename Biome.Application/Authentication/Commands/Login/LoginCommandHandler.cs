@@ -60,6 +60,14 @@ internal sealed class LoginCommandHandler : IRequestHandler<LoginCommand, Result
             return Result.Failure<AuthenticationResult>(new Error("User.InvalidCredentials", "Invalid email or password."));
         }
 
+        if (user.TwoFactorEnabled)
+        {
+            // Do not generate token yet. Warn client to use 2FA endpoint.
+            // For security, we might want to return a temporary short-lived token here
+            // that only allows access to the 2FA endpoint, but for MVP we rely on Client State flow.
+            return new AuthenticationResult(user, null, null, RequiresTwoFactor: true);
+        }
+
         // Feature: RBAC - User now holds a RoleId, not the Role object directly (DDD).
         // We must fetch the Role to get its Name for the Token claim.
         // In a Production app, this might be cached or eagerly loaded if EF Core includes navigation properties.
