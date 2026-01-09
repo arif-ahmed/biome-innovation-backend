@@ -17,8 +17,15 @@ public class HealthReportsController : ControllerBase
         _sender = sender;
     }
 
+    /// <summary>
+    /// Retrieves a health report by its unique identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the report.</param>
+    /// <returns>The health report details.</returns>
     [HttpGet("{id}")]
     [Authorize]
+    [ProducesResponseType(typeof(HealthReportDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id)
     {
         var query = new GetReportByIdQuery(id);

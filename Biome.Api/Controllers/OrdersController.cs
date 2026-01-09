@@ -17,8 +17,16 @@ public class OrdersController : ControllerBase
         _sender = sender;
     }
 
+    /// <summary>
+    /// Creates a new order for the authenticated user.
+    /// </summary>
+    /// <param name="items">The list of items to order.</param>
+    /// <returns>The unique identifier of the created order.</returns>
     [HttpPost]
     [Authorize]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> CreateOrder([FromBody] List<OrderItemDto> items)
     {
         var userId = GetUserId();
@@ -35,8 +43,15 @@ public class OrdersController : ControllerBase
         return Ok(result.Value);
     }
 
+    /// <summary>
+    /// Retrieves all orders placed by the authenticated user.
+    /// </summary>
+    /// <returns>A list of orders.</returns>
     [HttpGet]
     [Authorize]
+    [ProducesResponseType(typeof(IEnumerable<object>), StatusCodes.Status200OK)] // Can be more specific if DTO exists
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetMyOrders()
     {
         var userId = GetUserId();
