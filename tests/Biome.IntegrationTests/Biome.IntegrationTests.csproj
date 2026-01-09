@@ -22,10 +22,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Biome.Domain\Biome.Domain.csproj" />
-    <ProjectReference Include="..\..\Biome.Application\Biome.Application.csproj" />
-    <ProjectReference Include="..\..\Biome.Infrastructure\Biome.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\Biome.Api\Biome.Api.csproj" />
+    <ProjectReference Include="..\..\src\Biome.Domain\Biome.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Biome.Application\Biome.Application.csproj" />
+    <ProjectReference Include="..\..\src\Biome.Infrastructure\Biome.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Biome.Api\Biome.Api.csproj" />
   </ItemGroup>
 
 </Project>

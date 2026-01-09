@@ -22,9 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Biome.Domain\Biome.Domain.csproj" />
-    <ProjectReference Include="..\..\Biome.Application\Biome.Application.csproj" />
-    <ProjectReference Include="..\..\Biome.SharedKernel\Biome.SharedKernel.csproj" />
+    <ProjectReference Include="..\..\src\Biome.Domain\Biome.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Biome.Application\Biome.Application.csproj" />
+    <ProjectReference Include="..\..\src\Biome.SharedKernel\Biome.SharedKernel.csproj" />
   </ItemGroup>
 
 </Project>
