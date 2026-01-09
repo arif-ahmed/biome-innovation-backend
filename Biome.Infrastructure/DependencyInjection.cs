@@ -5,6 +5,7 @@ using Biome.Domain.Users;
 using Biome.Infrastructure.Authentication;
 using Biome.Infrastructure.Persistence.Repositories;
 using Biome.Infrastructure.Services;
+using Biome.Infrastructure.Persistence;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,21 +18,12 @@ public static class DependencyInjection
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
 
         services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
-        services.AddSingleton<IUserRepository, InMemoryUserRepository>();
-        services.AddSingleton<Biome.Domain.Roles.IRoleRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryRoleRepository>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<IEmailService, Biome.Infrastructure.Services.Email.MockEmailService>();
         services.AddSingleton<ITwoFactorService, Biome.Infrastructure.Services.Authentication.MockTwoFactorService>();
         services.AddSingleton<IShippingService, Biome.Infrastructure.Services.Shipping.MockShippingService>();
-        services.AddSingleton<Biome.Domain.Shipping.IShipmentRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryShipmentRepository>();
-        services.AddSingleton<Biome.Domain.Orders.IOrderRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryOrderRepository>();
-        services.AddSingleton<Biome.Domain.Payments.IPaymentRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryPaymentRepository>();
-        services.AddSingleton<Biome.Domain.Pets.IPetRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryPetRepository>();
         services.AddSingleton<Biome.Application.Common.Interfaces.IPaymentGateway, Biome.Infrastructure.Services.Payments.MockPaymentGateway>();
-        services.AddSingleton<Biome.Domain.Lab.ILabTestRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryLabTestRepository>();
-        services.AddSingleton<Biome.Domain.Reports.IHealthReportRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryHealthReportRepository>();
-        services.AddSingleton<Biome.Domain.Notifications.INotificationRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryNotificationRepository>();
-        services.AddSingleton<Biome.Domain.Support.ITicketRepository, Biome.Infrastructure.Persistence.Repositories.InMemoryTicketRepository>();
+        services.AddPersistence(configuration);
 
         services.AddAuthentication(defaultScheme: "Bearer")
             .AddJwtBearer(options =>
