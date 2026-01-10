@@ -26,6 +26,7 @@
     <ProjectReference Include="..\..\src\Biome.Application\Biome.Application.csproj" />
     <ProjectReference Include="..\..\src\Biome.Infrastructure\Biome.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\Biome.Api\Biome.Api.csproj" />
+    <ProjectReference Include="..\Biome.TestHelpers\Biome.TestHelpers.csproj" />
   </ItemGroup>
 
 </Project>

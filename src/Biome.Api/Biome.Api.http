@@ -1,6 +1,354 @@
 @Biome.Api_HostAddress = http://localhost:5198
 
+### Health Check
 GET {{Biome.Api_HostAddress}}/weatherforecast/
 Accept: application/json
+
+###
+
+# ===========================================
+# USER REGISTRATION TESTS
+# ===========================================
+
+### Register User - Happy Path
+POST {{Biome.Api_HostAddress}}/api/v1/users/register
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "Password123!",
+  "firstName": "John",
+  "lastName": "Doe"
+}
+
+###
+
+### Register User - Invalid Email
+POST {{Biome.Api_HostAddress}}/api/v1/users/register
+Content-Type: application/json
+
+{
+  "email": "invalid-email",
+  "password": "Password123!",
+  "firstName": "John",
+  "lastName": "Doe"
+}
+
+###
+
+### Register User - Weak Password
+POST {{Biome.Api_HostAddress}}/api/v1/users/register
+Content-Type: application/json
+
+{
+  "email": "test2@example.com",
+  "password": "123",
+  "firstName": "John",
+  "lastName": "Doe"
+}
+
+###
+
+### Register User - Missing First Name
+POST {{Biome.Api_HostAddress}}/api/v1/users/register
+Content-Type: application/json
+
+{
+  "email": "test3@example.com",
+  "password": "Password123!",
+  "lastName": "Doe"
+}
+
+###
+
+### Register User - Missing Last Name
+POST {{Biome.Api_HostAddress}}/api/v1/users/register
+Content-Type: application/json
+
+{
+  "email": "test4@example.com",
+  "password": "Password123!",
+  "firstName": "John"
+}
+
+###
+
+### Register User - Empty Fields
+POST {{Biome.Api_HostAddress}}/api/v1/users/register
+Content-Type: application/json
+
+{
+  "email": "",
+  "password": "",
+  "firstName": "",
+  "lastName": ""
+}
+
+###
+
+### Register User - Special Characters in Name
+POST {{Biome.Api_HostAddress}}/api/v1/users/register
+Content-Type: application/json
+
+{
+  "email": "special@example.com",
+  "password": "Password123!",
+  "firstName": "John-Paul",
+  "lastName": "O'Connor-Smith"
+}
+
+###
+
+### Register User - Long Email
+POST {{Biome.Api_HostAddress}}/api/v1/users/register
+Content-Type: application/json
+
+{
+  "email": "very.long.email.address.with.many.subdomains@example.co.uk",
+  "password": "Password123!",
+  "firstName": "John",
+  "lastName": "Doe"
+}
+
+###
+
+### Register User - Email with Plus Sign
+POST {{Biome.Api_HostAddress}}/api/v1/users/register
+Content-Type: application/json
+
+{
+  "email": "user+tag@example.com",
+  "password": "Password123!",
+  "firstName": "John",
+  "lastName": "Doe"
+}
+
+###
+
+# ===========================================
+# ADMIN USER CREATION TESTS
+# ===========================================
+
+### Create User (Admin) - Valid Request
+POST {{Biome.Api_HostAddress}}/api/v1/users
+Authorization: Bearer YOUR_ADMIN_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "firstName": "Admin",
+  "lastName": "Created",
+  "email": "admin-created@example.com",
+  "password": "Password123!",
+  "role": "User"
+}
+
+###
+
+### Create User (Admin) - Invalid Role
+POST {{Biome.Api_HostAddress}}/api/v1/users
+Authorization: Bearer YOUR_ADMIN_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "firstName": "Admin",
+  "lastName": "Created",
+  "email": "admin-bad@example.com",
+  "password": "Password123!",
+  "role": "InvalidRole"
+}
+
+###
+
+### Create User (Admin) - Missing Authorization
+POST {{Biome.Api_HostAddress}}/api/v1/users
+Content-Type: application/json
+
+{
+  "firstName": "Admin",
+  "lastName": "Created",
+  "email": "admin-no-auth@example.com",
+  "password": "Password123!",
+  "role": "User"
+}
+
+###
+
+### Create User (Admin) - Invalid Token
+POST {{Biome.Api_HostAddress}}/api/v1/users
+Authorization: Bearer invalid-token-here
+Content-Type: application/json
+
+{
+  "firstName": "Admin",
+  "lastName": "Created",
+  "email": "admin-invalid-token@example.com",
+  "password": "Password123!",
+  "role": "User"
+}
+
+###
+
+# ===========================================
+# USER PROFILE MANAGEMENT TESTS
+# ===========================================
+
+### Get User Profile (After Login)
+GET {{Biome.Api_HostAddress}}/api/v1/users/me
+Authorization: Bearer YOUR_USER_TOKEN_HERE
+
+###
+
+### Update User Profile
+PUT {{Biome.Api_HostAddress}}/api/v1/users/me
+Authorization: Bearer YOUR_USER_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "firstName": "Updated",
+  "lastName": "Name"
+}
+
+###
+
+### Change Password - Valid Request
+PUT {{Biome.Api_HostAddress}}/api/v1/users/me/password
+Authorization: Bearer YOUR_USER_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "currentPassword": "Password123!",
+  "newPassword": "NewPassword456!"
+}
+
+###
+
+### Change Password - Invalid Current Password
+PUT {{Biome.Api_HostAddress}}/api/v1/users/me/password
+Authorization: Bearer YOUR_USER_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "currentPassword": "WrongPassword",
+  "newPassword": "NewPassword456!"
+}
+
+###
+
+### Change Password - Weak New Password
+PUT {{Biome.Api_HostAddress}}/api/v1/users/me/password
+Authorization: Bearer YOUR_USER_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "currentPassword": "Password123!",
+  "newPassword": "123"
+}
+
+###
+
+# ===========================================
+# EDGE CASE TESTS
+# ===========================================
+
+### Register User - SQL Injection Attempt
+POST {{Biome.Api_HostAddress}}/api/v1/users/register
+Content-Type: application/json
+
+{
+  "email": "test'; DROP TABLE Users; --@example.com",
+  "password": "Password123!",
+  "firstName": "John",
+  "lastName": "Doe"
+}
+
+###
+
+### Register User - XSS Attempt
+POST {{Biome.Api_HostAddress}}/api/v1/users/register
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "Password123!",
+  "firstName": "<script>alert('xss')</script>",
+  "lastName": "Doe"
+}
+
+###
+
+### Register User - Very Long Name
+POST {{Biome.Api_HostAddress}}/api/v1/users/register
+Content-Type: application/json
+
+{
+  "email": "longname@example.com",
+  "password": "Password123!",
+  "firstName": "This is a very long first name that exceeds typical validation limits and should be rejected by the system",
+  "lastName": "Doe"
+}
+
+###
+
+### Register User - Unicode Characters
+POST {{Biome.Api_HostAddress}}/api/v1/users/register
+Content-Type: application/json
+
+{
+  "email": "unicode@example.com",
+  "password": "Password123!",
+  "firstName": "Jöhn",
+  "lastName": "Döe"
+}
+
+###
+
+# ===========================================
+# PERFORMANCE TESTS
+# ===========================================
+
+### Register User - Large Payload Test
+POST {{Biome.Api_HostAddress}}/api/v1/users/register
+Content-Type: application/json
+
+{
+  "email": "large@example.com",
+  "password": "Password123!",
+  "firstName": "John",
+  "lastName": "Doe",
+  "extraData": {
+    "field1": "value1",
+    "field2": "value2",
+    "field3": "value3",
+    "field4": "value4",
+    "field5": "value5"
+  }
+}
+
+###
+
+# ===========================================
+# AUTHENTICATION TESTS
+# ===========================================
+
+### Login User (if endpoint exists)
+POST {{Biome.Api_HostAddress}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "Password123!"
+}
+
+###
+
+### Refresh Token (if endpoint exists)
+POST {{Biome.Api_HostAddress}}/api/v1/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "YOUR_REFRESH_TOKEN_HERE"
+}
+
+###
 
 ###
