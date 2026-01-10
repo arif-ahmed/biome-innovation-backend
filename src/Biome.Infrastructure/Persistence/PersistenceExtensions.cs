@@ -12,8 +12,10 @@ using Biome.Domain.Shipping;
 using Biome.Domain.Support;
 using Biome.Domain.Users;
 using Biome.Infrastructure.Persistence.Configurations;
+using Biome.Infrastructure.Persistence.Initialization;
 using Biome.Infrastructure.Persistence.Repositories;
 using Biome.Infrastructure.Persistence.Repositories.DynamoDb;
+using Biome.Infrastructure.LocalStack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -61,23 +63,23 @@ public static class PersistenceExtensions
 
     public static IServiceCollection AddDynamoDbPersistence(this IServiceCollection services, IConfiguration configuration)
     {
+        // Add LocalStack configuration first
+        services.AddLocalStackServices(configuration);
+
         // AWS Options are usually picked up automatically from appsettings "AWS" section 
         // if using AddDefaultAWSOptions, but here we can be explicit or rely on default.
         services.AddDefaultAWSOptions(configuration.GetAWSOptions());
         services.AddAWSService<IAmazonDynamoDB>();
         services.AddSingleton<IDynamoDBContext, DynamoDBContext>();
 
+        // Register table initializer for development
+        services.AddSingleton<DynamoDbTableInitializer>();
+
         // Register DynamoDB implementations
-        // Note: For now we only have TicketRepository, others might need stubs or fallback to InMemory for hybrid (but purely we should implement all)
-        // To allow build to pass without implementing everything immediately:
-        // We will use InMemory for the missing ones temporarily or we should warn the user.
-        // For this task, I will map TicketRepository to DynamoDbTicketRepository
-        // and others to InMemory to prevent crash/build error, BUT logically this is "Generic Persistence", so eventually all must be real.
-        
+        services.AddSingleton<IUserRepository, DynamoDbUserRepository>();
         services.AddSingleton<ITicketRepository, DynamoDbTicketRepository>();
         
         // Fallbacks for not-yet-implemented DynamoDB repos
-        services.AddSingleton<IUserRepository, InMemoryUserRepository>(); 
         services.AddSingleton<IRoleRepository, InMemoryRoleRepository>();
         services.AddSingleton<IShipmentRepository, InMemoryShipmentRepository>();
         services.AddSingleton<IOrderRepository, InMemoryOrderRepository>();

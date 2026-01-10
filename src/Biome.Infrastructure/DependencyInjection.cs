@@ -6,6 +6,7 @@ using Biome.Infrastructure.Authentication;
 using Biome.Infrastructure.Persistence.Repositories;
 using Biome.Infrastructure.Services;
 using Biome.Infrastructure.Persistence;
+using Biome.Infrastructure.Persistence.Initialization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
