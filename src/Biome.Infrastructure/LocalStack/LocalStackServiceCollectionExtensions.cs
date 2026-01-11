@@ -15,13 +15,15 @@ public static class LocalStackServiceCollectionExtensions
         
         if (localStackSettings?.Enabled == true)
         {
-            services.Configure<AmazonDynamoDBConfig>(config =>
+            var config = new AmazonDynamoDBConfig
             {
-                config.ServiceURL = localStackSettings.ServiceUrl;
-                config.AuthenticationRegion = localStackSettings.Region;
-                // Disable SSL for LocalStack
-                config.UseHttp = true;
-            });
+                ServiceURL = localStackSettings.ServiceUrl,
+                AuthenticationRegion = localStackSettings.Region,
+                UseHttp = true
+            };
+            
+            services.AddSingleton(config);
+            services.AddSingleton<IAmazonDynamoDB>(sp => new AmazonDynamoDBClient(config));
         }
 
         return services;

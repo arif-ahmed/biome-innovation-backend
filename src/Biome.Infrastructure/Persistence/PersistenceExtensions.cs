@@ -69,7 +69,14 @@ public static class PersistenceExtensions
         // AWS Options are usually picked up automatically from appsettings "AWS" section 
         // if using AddDefaultAWSOptions, but here we can be explicit or rely on default.
         services.AddDefaultAWSOptions(configuration.GetAWSOptions());
-        services.AddAWSService<IAmazonDynamoDB>();
+        
+        // Add AmazonDynamoDB client if not already registered (e.g., by LocalStack)
+        var dynamoDbDescriptor = services.FirstOrDefault(d => d.ServiceType == typeof(IAmazonDynamoDB));
+        if (dynamoDbDescriptor == null)
+        {
+            services.AddAWSService<IAmazonDynamoDB>();
+        }
+
         services.AddSingleton<IDynamoDBContext, DynamoDBContext>();
 
         // Register table initializer for development

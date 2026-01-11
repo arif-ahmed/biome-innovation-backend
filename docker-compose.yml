@@ -1,27 +1,12 @@
-version: '3.8'
-
 services:
   localstack:
     image: localstack/localstack:latest
-    container_name: biome-localstack
+    container_name: localstack-main
     ports:
-      - "4566:4566"
-      - "4510-4559:4510-4559"
+      - "4566:4566"  # LocalStack “edge” port (main entry point)
     environment:
-      - SERVICES=dynamodb
+      - SERVICES=s3,dynamodb,sqs,lambda,apigateway,iam,sts
       - DEBUG=1
-      - DATA_DIR=/tmp/localstack/data
-      - DOCKER_HOST=unix:///var/run/docker.sock
     volumes:
-      - "./tmp/localstack:/tmp/localstack"
+      - "./localstack-data:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
-    networks:
-      - biome-network
-
-networks:
-  biome-network:
-    driver: bridge
-
-volumes:
-  localstack-data:
-    driver: local

@@ -1,5 +1,6 @@
 using Biome.Application;
 using Biome.Infrastructure;
+using Biome.Infrastructure.Persistence.Initialization;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +19,11 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
+    
+    // Initialize DynamoDB tables for LocalStack
+    using var scope = app.Services.CreateScope();
+    var initializer = scope.ServiceProvider.GetRequiredService<DynamoDbTableInitializer>();
+    await initializer.InitializeAsync();
 }
 
 app.UseHttpsRedirection();
