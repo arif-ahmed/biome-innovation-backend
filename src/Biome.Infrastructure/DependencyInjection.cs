@@ -29,6 +29,7 @@ public static class DependencyInjection
         services.AddAuthentication(defaultScheme: "Bearer")
             .AddJwtBearer(options =>
             {
+                options.MapInboundClaims = false;
                 var jwtSettings = configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>()!;
                 options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                 {
@@ -40,6 +41,29 @@ public static class DependencyInjection
                     ValidAudience = jwtSettings.Audience,
                     IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
                         System.Text.Encoding.UTF8.GetBytes(jwtSettings.Secret))
+                };
+
+                options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
+                {
+                    OnAuthenticationFailed = context =>
+                    {
+                        Console.WriteLine(">>> Authentication Failed: " + context.Exception.Message);
+                        return Task.CompletedTask;
+                    },
+                    OnTokenValidated = context =>
+                    {
+                        Console.WriteLine(">>> Token Validated Successfully. User: " + context.Principal?.Identity?.Name);
+                        foreach(var claim in context.Principal?.Claims ?? [])
+                        {
+                            Console.WriteLine($"   Claim: {claim.Type} = {claim.Value}");
+                        }
+                        return Task.CompletedTask;
+                    },
+                    OnForbidden = context =>
+                    {
+                        Console.WriteLine(">>> Forbidden: " + context.Result?.Failure?.Message);
+                        return Task.CompletedTask;
+                    }
                 };
             });
 
