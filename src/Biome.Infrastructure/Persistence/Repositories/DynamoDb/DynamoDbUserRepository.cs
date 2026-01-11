@@ -36,76 +36,28 @@ public class DynamoDbUserRepository : IUserRepository, IUnitOfWork
 
     public async Task<User?> GetByEmailAsync(Email email, CancellationToken cancellationToken = default)
     {
-        // For now, we'll use a basic scan operation to find user by email
-        // In production, you would create proper GSIs and use query operations for better performance
-        var scanRequest = new ScanRequest
+        var config = new DynamoDBOperationConfig
         {
-            TableName = "Users",
-            FilterExpression = "Email = :email",
-            ExpressionAttributeValues = new Dictionary<string, AttributeValue>
-            {
-                [":email"] = new AttributeValue { S = email.Value }
-            }
+            IndexName = "EmailIndex"
         };
 
-        var response = await _dynamoDbClient.ScanAsync(scanRequest, cancellationToken);
-        var item = response.Items.FirstOrDefault();
+        var search = _context.QueryAsync<UserDynamoDbEntity>(email.Value, config);
+        var entities = await search.GetRemainingAsync(cancellationToken);
         
-        if (item == null) return null;
-        
-        // Convert DynamoDB item to entity
-        var entity = new UserDynamoDbEntity
-        {
-            Id = Guid.Parse(item["Id"].S),
-            FirstName = item["FirstName"].S,
-            LastName = item["LastName"].S,
-            Email = item["Email"].S,
-            PasswordHash = item["PasswordHash"].S,
-            RoleId = Guid.Parse(item["RoleId"].S),
-            IsEmailVerified = bool.Parse(item["IsEmailVerified"].BOOL.ToString()),
-            IsBanned = bool.Parse(item["IsBanned"].BOOL.ToString()),
-            TwoFactorEnabled = bool.Parse(item["TwoFactorEnabled"].BOOL.ToString()),
-            TwoFactorSecret = item.ContainsKey("TwoFactorSecret") ? item["TwoFactorSecret"].S : null
-        };
-
-        return UserMapper.ToDomainEntity(entity);
+        return UserMapper.ToDomainEntity(entities.FirstOrDefault());
     }
 
     public async Task<User?> GetByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
     {
-        // For now, we'll use a basic scan operation to find user by refresh token
-        // In production, you would create proper GSIs and use query operations for better performance
-        var scanRequest = new ScanRequest
+        var config = new DynamoDBOperationConfig
         {
-            TableName = "Users",
-            FilterExpression = "RefreshToken.Token = :refreshToken",
-            ExpressionAttributeValues = new Dictionary<string, AttributeValue>
-            {
-                [":refreshToken"] = new AttributeValue { S = refreshToken }
-            }
+            IndexName = "RefreshTokenIndex"
         };
 
-        var response = await _dynamoDbClient.ScanAsync(scanRequest, cancellationToken);
-        var item = response.Items.FirstOrDefault();
+        var search = _context.QueryAsync<UserDynamoDbEntity>(refreshToken, config);
+        var entities = await search.GetRemainingAsync(cancellationToken);
         
-        if (item == null) return null;
-        
-        // Convert DynamoDB item to entity
-        var entity = new UserDynamoDbEntity
-        {
-            Id = Guid.Parse(item["Id"].S),
-            FirstName = item["FirstName"].S,
-            LastName = item["LastName"].S,
-            Email = item["Email"].S,
-            PasswordHash = item["PasswordHash"].S,
-            RoleId = Guid.Parse(item["RoleId"].S),
-            IsEmailVerified = bool.Parse(item["IsEmailVerified"].BOOL.ToString()),
-            IsBanned = bool.Parse(item["IsBanned"].BOOL.ToString()),
-            TwoFactorEnabled = bool.Parse(item["TwoFactorEnabled"].BOOL.ToString()),
-            TwoFactorSecret = item.ContainsKey("TwoFactorSecret") ? item["TwoFactorSecret"].S : null
-        };
-
-        return UserMapper.ToDomainEntity(entity);
+        return UserMapper.ToDomainEntity(entities.FirstOrDefault());
     }
 
     public void Add(User user)

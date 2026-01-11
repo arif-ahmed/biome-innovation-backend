@@ -63,11 +63,36 @@ public class DynamoDbTableInitializer
             TableName = tableName,
             AttributeDefinitions = new List<Amazon.DynamoDBv2.Model.AttributeDefinition>
             {
-                new() { AttributeName = "Id", AttributeType = "S" }
+                new() { AttributeName = "Id", AttributeType = "S" },
+                new() { AttributeName = "Email", AttributeType = "S" },
+                new() { AttributeName = "RefreshTokenIndex", AttributeType = "S" }
             },
             KeySchema = new List<Amazon.DynamoDBv2.Model.KeySchemaElement>
             {
                 new() { AttributeName = "Id", KeyType = "HASH" }
+            },
+            GlobalSecondaryIndexes = new List<Amazon.DynamoDBv2.Model.GlobalSecondaryIndex>
+            {
+                new()
+                {
+                    IndexName = "EmailIndex",
+                    KeySchema = new List<Amazon.DynamoDBv2.Model.KeySchemaElement>
+                    {
+                        new() { AttributeName = "Email", KeyType = "HASH" }
+                    },
+                    Projection = new() { ProjectionType = "ALL" },
+                    ProvisionedThroughput = new() { ReadCapacityUnits = 1, WriteCapacityUnits = 1 }
+                },
+                new()
+                {
+                    IndexName = "RefreshTokenIndex",
+                    KeySchema = new List<Amazon.DynamoDBv2.Model.KeySchemaElement>
+                    {
+                        new() { AttributeName = "RefreshTokenIndex", KeyType = "HASH" }
+                    },
+                    Projection = new() { ProjectionType = "ALL" },
+                    ProvisionedThroughput = new() { ReadCapacityUnits = 1, WriteCapacityUnits = 1 }
+                }
             },
             ProvisionedThroughput = new() { ReadCapacityUnits = 1, WriteCapacityUnits = 1 }
         };
