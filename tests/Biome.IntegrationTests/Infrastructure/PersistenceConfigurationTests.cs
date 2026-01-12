@@ -62,4 +62,26 @@ public class PersistenceConfigurationTests : IClassFixture<WebApplicationFactory
         // Assert
         repository.Should().BeOfType<DynamoDbTicketRepository>();
     }
+
+    [Fact]
+    public void DI_ShouldResolvePostgresRepository_WhenProviderIsPostgres()
+    {
+        // Arrange
+        using var factory = _factory.WithWebHostBuilder(builder =>
+        {
+            builder.UseSetting("Persistence:Provider", "Postgres");
+            builder.UseSetting("ConnectionStrings:DefaultConnection", "Host=localhost;Database=test;Username=test;Password=test");
+        });
+
+        // Act
+        using var scope = factory.Services.CreateScope();
+        
+        var settings = scope.ServiceProvider.GetService<Microsoft.Extensions.Options.IOptions<Biome.Infrastructure.Persistence.Configurations.PersistenceSettings>>();
+        settings.Value.Provider.Should().Be("Postgres");
+
+        var repository = scope.ServiceProvider.GetRequiredService<ITicketRepository>();
+
+        // Assert
+        repository.Should().BeOfType<Biome.Infrastructure.Persistence.Repositories.Postgres.PostgresTicketRepository>();
+    }
 }

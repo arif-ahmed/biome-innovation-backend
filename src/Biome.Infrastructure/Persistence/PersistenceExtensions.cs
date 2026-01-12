@@ -18,6 +18,8 @@ using Biome.Infrastructure.Persistence.Repositories.DynamoDb;
 using Biome.Infrastructure.LocalStack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace Biome.Infrastructure.Persistence;
 
@@ -35,6 +37,9 @@ public static class PersistenceExtensions
         {
             case "DynamoDb":
                 services.AddDynamoDbPersistence(configuration);
+                break;
+            case "Postgres":
+                services.AddPostgresPersistence(configuration);
                 break;
             case "InMemory":
             default:
@@ -87,6 +92,27 @@ public static class PersistenceExtensions
         services.AddSingleton<ITicketRepository, DynamoDbTicketRepository>();
         
         // Fallbacks for not-yet-implemented DynamoDB repos
+        services.AddSingleton<IRoleRepository, InMemoryRoleRepository>();
+        services.AddSingleton<IShipmentRepository, InMemoryShipmentRepository>();
+        services.AddSingleton<IOrderRepository, InMemoryOrderRepository>();
+        services.AddSingleton<IPaymentRepository, InMemoryPaymentRepository>();
+        services.AddSingleton<IPetRepository, InMemoryPetRepository>();
+        services.AddSingleton<ILabTestRepository, InMemoryLabTestRepository>();
+        services.AddSingleton<IHealthReportRepository, InMemoryHealthReportRepository>();
+        services.AddSingleton<INotificationRepository, InMemoryNotificationRepository>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddPostgresPersistence(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddDbContext<BiomeDbContext>(options =>
+            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+
+        services.AddScoped<IUserRepository, Biome.Infrastructure.Persistence.Repositories.Postgres.PostgresUserRepository>();
+        services.AddScoped<ITicketRepository, Biome.Infrastructure.Persistence.Repositories.Postgres.PostgresTicketRepository>();
+
+        // Fallbacks for not-yet-implemented Postgres repos
         services.AddSingleton<IRoleRepository, InMemoryRoleRepository>();
         services.AddSingleton<IShipmentRepository, InMemoryShipmentRepository>();
         services.AddSingleton<IOrderRepository, InMemoryOrderRepository>();
