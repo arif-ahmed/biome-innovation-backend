@@ -15,10 +15,12 @@ using Biome.Infrastructure.Persistence.Configurations;
 using Biome.Infrastructure.Persistence.Initialization;
 using Biome.Infrastructure.Persistence.Repositories;
 using Biome.Infrastructure.Persistence.Repositories.DynamoDb;
+using Biome.Infrastructure.Persistence.Repositories.MongoDb;
+using Biome.Infrastructure.Persistence.MongoDb;
+using Biome.Infrastructure.Persistence.MongoDb.Settings;
 using Biome.Infrastructure.LocalStack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Biome.Infrastructure.Persistence;
@@ -40,6 +42,9 @@ public static class PersistenceExtensions
                 break;
             case "Postgres":
                 services.AddPostgresPersistence(configuration);
+                break;
+            case "MongoDb":
+                services.AddMongoDbPersistence(configuration);
                 break;
             case "InMemory":
             default:
@@ -118,6 +123,37 @@ public static class PersistenceExtensions
         services.AddSingleton<IOrderRepository, InMemoryOrderRepository>();
         services.AddSingleton<IPaymentRepository, InMemoryPaymentRepository>();
         services.AddSingleton<IPetRepository, InMemoryPetRepository>();
+        services.AddSingleton<ILabTestRepository, InMemoryLabTestRepository>();
+        services.AddSingleton<IHealthReportRepository, InMemoryHealthReportRepository>();
+        services.AddSingleton<INotificationRepository, InMemoryNotificationRepository>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddMongoDbPersistence(this IServiceCollection services, IConfiguration configuration)
+    {
+        // Configure MongoDB settings
+        services.Configure<MongoDbSettings>(configuration.GetSection(MongoDbSettings.SectionName));
+
+        // Register MongoDB context and unit of work
+        services.AddSingleton<MongoDbContext>();
+        services.AddScoped<MongoDbUnitOfWork>();
+        services.AddScoped<MongoDbUnitOfWork>(provider => 
+        {
+            var context = provider.GetRequiredService<MongoDbContext>();
+            return new MongoDbUnitOfWork(context);
+        });
+
+        // Register MongoDB repository implementations
+        services.AddScoped<IUserRepository, MongoDbUserRepository>();
+        services.AddScoped<ITicketRepository, MongoDbTicketRepository>();
+        services.AddScoped<IRoleRepository, MongoDbRoleRepository>();
+        services.AddScoped<IPetRepository, MongoDbPetRepository>();
+
+        // Fallbacks for not-yet-implemented MongoDB repos
+        services.AddSingleton<IShipmentRepository, InMemoryShipmentRepository>();
+        services.AddSingleton<IOrderRepository, InMemoryOrderRepository>();
+        services.AddSingleton<IPaymentRepository, InMemoryPaymentRepository>();
         services.AddSingleton<ILabTestRepository, InMemoryLabTestRepository>();
         services.AddSingleton<IHealthReportRepository, InMemoryHealthReportRepository>();
         services.AddSingleton<INotificationRepository, InMemoryNotificationRepository>();
