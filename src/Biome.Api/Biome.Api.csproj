@@ -10,6 +10,8 @@
 
   <ItemGroup>
     <PackageReference Include="Amazon.Lambda.AspNetCoreServer.Hosting" Version="1.9.0" />
+    <PackageReference Include="AWSSDK.Core" Version="4.0.3.8" />
+    <PackageReference Include="AWSSDK.SecurityToken" Version="4.0.*" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.1" />
     <PackageReference Include="Scalar.AspNetCore" Version="2.12.4" />
   </ItemGroup>

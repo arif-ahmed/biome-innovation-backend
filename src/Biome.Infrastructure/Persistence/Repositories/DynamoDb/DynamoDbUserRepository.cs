@@ -36,7 +36,7 @@ public class DynamoDbUserRepository : IUserRepository, IUnitOfWork
 
     public async Task<User?> GetByEmailAsync(Email email, CancellationToken cancellationToken = default)
     {
-        var config = new DynamoDBOperationConfig
+        var config = new QueryConfig
         {
             IndexName = "EmailIndex"
         };
@@ -49,7 +49,7 @@ public class DynamoDbUserRepository : IUserRepository, IUnitOfWork
 
     public async Task<User?> GetByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
     {
-        var config = new DynamoDBOperationConfig
+        var config = new QueryConfig
         {
             IndexName = "RefreshTokenIndex"
         };

@@ -51,7 +51,7 @@ public class PersistenceConfigurationTests : IClassFixture<WebApplicationFactory
         using var scope = factory.Services.CreateScope();
         
         var settings = scope.ServiceProvider.GetService<Microsoft.Extensions.Options.IOptions<Biome.Infrastructure.Persistence.Configurations.PersistenceSettings>>();
-        settings.Value.Provider.Should().Be("DynamoDb", "Provider should be configured to DynamoDb");
+        settings?.Value.Provider.Should().Be("DynamoDb", "Provider should be configured to DynamoDb");
 
         // Verify dependencies
         var amazonDynamo = scope.ServiceProvider.GetService<Amazon.DynamoDBv2.IAmazonDynamoDB>();
@@ -77,7 +77,7 @@ public class PersistenceConfigurationTests : IClassFixture<WebApplicationFactory
         using var scope = factory.Services.CreateScope();
         
         var settings = scope.ServiceProvider.GetService<Microsoft.Extensions.Options.IOptions<Biome.Infrastructure.Persistence.Configurations.PersistenceSettings>>();
-        settings.Value.Provider.Should().Be("Postgres");
+        settings?.Value.Provider.Should().Be("Postgres");
 
         var repository = scope.ServiceProvider.GetRequiredService<ITicketRepository>();
 
